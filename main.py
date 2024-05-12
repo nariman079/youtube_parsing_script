@@ -1,7 +1,6 @@
 """
 This is docstring
 """
-import asyncio
 from services.main_services import (install_video_form_file,
                                 check_channel_last_video,
                                 download_video_in_youtube,
@@ -23,10 +22,10 @@ while True:
 match method:
     case 1:
         channel_url = input("Enter channel url:") or 'https://www.youtube.com/@operativnik444/videos'
-        asyncio.run(check_channel_last_video(channel_url=channel_url))
+        check_channel_last_video(channel_url=channel_url)
     case 2:
         txt_file = input("Enter txt filename:") or '@eminem.txt'
-        asyncio.run(install_video_form_file(txt_file))
+        install_video_form_file(txt_file)
     case 3:
         channel_url = input('Enter channel url:') or 'https://www.youtube.com/@eminem/videos'
         try:
@@ -46,6 +45,6 @@ match method:
 
     case 4:
         video_url = input("Enter video url:") or 'https://www.youtube.com/watch?v=rR3PcMB1bNw'
-        asyncio.run(download_video_in_youtube(video_url=video_url, id_=1, all_video_count=1))
+        download_video_in_youtube(video_url=video_url, id_=1, all_video_count=1)
     case _:
         pass

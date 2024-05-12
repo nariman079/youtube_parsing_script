@@ -14,7 +14,7 @@ from services.selenium_services import YoutubeSelenium
 from base_datas import (BASE_DOWNLOAD_PATH, BASE_TXT_LIST_PATH,
                         BASE_URL_FILE)
 
-async def download_video_in_youtube(
+def download_video_in_youtube(
     instalation_path: str = 'video/',
     video_url: str = '',
     id_: int = 0,
@@ -36,7 +36,7 @@ async def download_video_in_youtube(
             video_highest = youtube.streams.get_highest_resolution()
             if video := video_highest:
                 video.download(output_path=full_path, filename=new_filename)
-        print(f"✅ ({id_}/{all_video_count}) - {youtube.title} ")
+            print(f"✅ ({id_}/{all_video_count}) - {youtube.title} ")
     except AgeRestrictedError:
         print(f"🔞 ({id_}/{all_video_count}) - {youtube.title} ")
     except FileNotFoundError:
@@ -44,27 +44,25 @@ async def download_video_in_youtube(
     except VideoUnavailable:
         print(f"❌ ({id_}/{all_video_count}) - {youtube.title} ")
 
-async def install_video_form_file(
+def install_video_form_file(
         ursl_txt_file: str | None = BASE_URL_FILE,
         instalation_path: str = 'video'
         ) -> None:
     """
     Installation video from urls.txt
     """
-    async with asyncio.TaskGroup() as tg:
-        with open(f'{BASE_TXT_LIST_PATH}{ursl_txt_file}', 'r', encoding='utf-8') as file:
-            all_urls: List[str] = file.readlines()
-            for _, url in enumerate(all_urls):
-                if len(url) > 10:
-                    tg.create_task(
-                        download_video_in_youtube(
-                            video_url=url, id_=_+1,
-                            all_video_count=len(all_urls), 
-                            instalation_path=instalation_path
-                            )
-                        )
+    with open(f'{BASE_TXT_LIST_PATH}{ursl_txt_file}', 'r', encoding='utf-8') as file:
+        all_urls: List[str] = file.readlines()
+        for _, url in enumerate(all_urls):
+            if len(url) > 10:
+                download_video_in_youtube(
+                    video_url=url, id_=_+1,
+                    all_video_count=len(all_urls), 
+                    instalation_path=instalation_path
+                    )
+                        
 
-async def check_channel_last_video(channel_url) -> None:
+def check_channel_last_video(channel_url) -> None:
     """ Check youtube channel on new video"""
     i = 0
 
@@ -75,12 +73,7 @@ async def check_channel_last_video(channel_url) -> None:
         if last_video:
             if is_new_video(channel.channel_name, video_id=last_video.video_id):
                 path = f"channels/{channel.channel_name}/videos/"
-                task = asyncio.create_task(
-                    download_video_in_youtube(
-                        video_url=last_video.url, instalation_path=path, id_=1, all_video_count=1
-                        )
-                    )
-                await task
+                download_video_in_youtube(video_url=last_video.url, instalation_path=path, id_=1, all_video_count=1)
                 time.sleep(60)
 
         print(f"Request {i}: Not new video")
@@ -93,4 +86,4 @@ def get_video_url_from_channel(channel_url, install_immediately: int = 0):
 
     if install_immediately == 1:
         path = f"channels/{selenium_action.channel_name}/videos/"
-        asyncio.run(install_video_form_file(selenium_action.txt_file_name, instalation_path=path))
+        install_video_form_file(selenium_action.txt_file_name, instalation_path=path)
