@@ -44,9 +44,8 @@ match method:
         except TypeError:
             print("Enter correct value")
 
-
     case 4:
         video_url = input("Enter video url:") or 'https://www.youtube.com/watch?v=rR3PcMB1bNw'
-        asyncio.run(download_video_in_youtube(video_url=video_url))
+        asyncio.run(download_video_in_youtube(video_url=video_url, id_=1, all_video_count=1))
     case _:
         pass

@@ -20,12 +20,15 @@ def is_exists_file(full_file_name: str, path: str) -> bool:
     :param path
     """
     split_symbol = '|'
-    file_name = full_file_name.split(split_symbol)[1] if split_symbol in full_file_name else None
-    onlyfiles = list()
-    for f in os.listdir(path):
-        if os.path.isfile(os.path.join(path, f)):
-            if split_symbol in full_file_name:
-                onlyfiles.append(f.split(split_symbol)[1])
+    try:
+        file_name = full_file_name.split(split_symbol)[1] if split_symbol in full_file_name else None
+        onlyfiles = list()
+        for f in os.listdir(path):
+            if os.path.isfile(os.path.join(path, f)):
+                if split_symbol in full_file_name:
+                    onlyfiles.append(f.split(split_symbol)[1])
+    except IndexError:
+        return False
     return file_name in onlyfiles
 
 
