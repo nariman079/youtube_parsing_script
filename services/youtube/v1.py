@@ -31,6 +31,7 @@ def is_exists_file(full_file_name: str, path: str) -> bool:
         return False
     return file_name in onlyfiles
 
+
 def is_new_video(channel_name: str, video_id: str) -> bool:
     """
     Video is last video of channel?
@@ -158,3 +159,4 @@ class YoutubeCsm:
             last_video = None
 
         return get_video_obj(last_video)
+

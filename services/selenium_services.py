@@ -58,7 +58,7 @@ class YoutubeSelenium:
         self.get_channel_name = None
         self.txt_file_name = None
         self.csv_file_name = None
-        self.channel_name = None
+        self.channel_name = "channel"
         self.options = Options()
         self.driver = webdriver.Chrome(
             service=Service(ChromeDriverManager().install()),

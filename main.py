@@ -3,7 +3,7 @@ This is docstring
 """
 from services.main_services import (install_video_form_file,
                                 check_channel_last_video,
-                                download_video_in_youtube,
+                                download_video_in_youtube_v2,
                                 get_video_url_from_channel)
 
 while True:
@@ -21,12 +21,14 @@ while True:
 
 match method:
     case 1:
-        channel_url = input("Enter channel url:") or 'https://www.youtube.com/@operativnik444/videos'
+        # ✅
+        channel_url = input("Enter channel url:") or 'https://www.youtube.com/@eminem/videos'
         check_channel_last_video(channel_url=channel_url)
     case 2:
         txt_file = input("Enter txt filename:") or '@eminem.txt'
         install_video_form_file(txt_file)
     case 3:
+        # ✅
         channel_url = input('Enter channel url:') or 'https://www.youtube.com/@eminem/videos'
         try:
             while True:
@@ -44,7 +46,8 @@ match method:
             print("Enter correct value")
 
     case 4:
+        # ✅
         video_url = input("Enter video url:") or 'https://www.youtube.com/watch?v=rR3PcMB1bNw'
-        download_video_in_youtube(video_url=video_url, id_=1, all_video_count=1)
+        download_video_in_youtube_v2(video_url=video_url, id_=1, all_video_count=1)
     case _:
         pass
