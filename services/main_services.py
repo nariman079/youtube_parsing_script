@@ -10,43 +10,14 @@ from typing import List
 
 from utils.pytube import YouTube
 from utils.pytube.exceptions import AgeRestrictedError, VideoUnavailable
-from services.youtube_services import YoutubeCsm, is_exists_file, is_new_video
 from services.selenium_services import YoutubeSelenium
-from services.youtube import v2
-from base_datas import (BASE_DOWNLOAD_PATH, BASE_TXT_LIST_PATH,
+from services.youtube.v2 import is_exists_file, is_new_video
+from services.youtube.v1 import YoutubeCsm
+from base_datas import (BASE_DOWNLOAD_PATH, 
+                        BASE_TXT_LIST_PATH,
                         BASE_URL_FILE)
 
 def download_video_in_youtube(
-    instalation_path: str = 'video/',
-    video_url: str = '',
-    id_: int = 0,
-    all_video_count: int = 0) -> None:
-    """
-    Download video by video url
-    """
-    youtube = YouTube(video_url)
-    full_path = BASE_DOWNLOAD_PATH + instalation_path
-
-    if not os.path.isdir(full_path):
-        os.makedirs(full_path, exist_ok=True)
-
-    try:
-        new_filename = f"{datetime.now().strftime(r'%d-%m-%Y %H:%M')}|{youtube.title}.mp4"
-        if is_exists_file(new_filename, full_path):
-            pass
-        else:
-            video_highest = youtube.streams.get_highest_resolution()
-            if video := video_highest:
-                video.download(output_path=full_path, filename=new_filename)
-            print(f"✅ ({id_}/{all_video_count}) - {youtube.title} ")
-    except AgeRestrictedError:
-        print(f"🔞 ({id_}/{all_video_count}) - {youtube.title} ")
-    except FileNotFoundError:
-        print(f"⭕ ({id_}/{all_video_count}) - {youtube.title} ")
-    except VideoUnavailable:
-        print(f"❌ ({id_}/{all_video_count}) - {youtube.title} ")
-
-def download_video_in_youtube_v2(
     instalation_path: Path = Path('.', 'videos'),
     video_url: str = '',
     id_: int = 1,
@@ -61,13 +32,13 @@ def download_video_in_youtube_v2(
         os.makedirs(full_path, exist_ok=True)
 
     try:
-        new_filename = f"{datetime.now().strftime(r'%d-%m-%Y %H:%M')}|{youtube.title}.mp4"
-        if v2.is_exists_file(youtube.title, full_path):
+        new_filename = f"[{datetime.now().strftime(r'%d-%m-%Y %H:%M')}][{youtube.title}].mp4"
+        if is_exists_file(youtube.title, full_path):
             pass
         else:
             video_highest = youtube.streams.get_highest_resolution()
             if video := video_highest:
-                video.download(output_path=full_path.__str__(), filename=new_filename)
+                video.download(output_path=full_path, filename=new_filename)
 
             print(f"✅ ({id_}/{all_video_count}) - {youtube.title} ")
     except AgeRestrictedError:
@@ -79,21 +50,22 @@ def download_video_in_youtube_v2(
 
 
 def install_video_form_file(
-        ursl_txt_file: str | None = BASE_URL_FILE,
+        ursl_txt_file: Path = BASE_URL_FILE,
         instalation_path: Path = Path('.', 'videos')
         ) -> None:
     """
     Installation video from urls.txt
     """
-    with open(f'{BASE_TXT_LIST_PATH}{ursl_txt_file}', 'r', encoding='utf-8') as file:
+    path = Path(BASE_TXT_LIST_PATH, ursl_txt_file)
+    with open(path, 'r', encoding='utf-8') as file:
         all_urls: List[str] = file.readlines()
         for i, url in enumerate(all_urls):
             if len(url) > 10:
-                download_video_in_youtube_v2(
+                download_video_in_youtube(
                     video_url=url, id_=i+1,
                     all_video_count=len(all_urls),
                     instalation_path=instalation_path
-                    ) 
+                    )
 
 def check_channel_last_video(channel_url) -> None:
     """ Check youtube channel on new video"""
@@ -104,9 +76,9 @@ def check_channel_last_video(channel_url) -> None:
         channel = YoutubeCsm(channel_url=channel_url)
         last_video = channel.get_last_video()
         if last_video:
-            if v2.is_new_video(channel.channel_name, video_id=last_video.video_id):
+            if is_new_video(channel.channel_name, video_id=last_video.video_id):
                 path = Path('channels', channel.channel_name , 'videos')
-                download_video_in_youtube_v2(
+                download_video_in_youtube(
                     video_url=last_video.url,
                     instalation_path=path
                     )

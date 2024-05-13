@@ -3,7 +3,7 @@ This is docstring
 """
 from services.main_services import (install_video_form_file,
                                 check_channel_last_video,
-                                download_video_in_youtube_v2,
+                                download_video_in_youtube,
                                 get_video_url_from_channel)
 
 while True:
@@ -48,6 +48,6 @@ match method:
     case 4:
         # ✅
         video_url = input("Enter video url:") or 'https://www.youtube.com/watch?v=rR3PcMB1bNw'
-        download_video_in_youtube_v2(video_url=video_url, id_=1, all_video_count=1)
+        download_video_in_youtube(video_url=video_url, id_=1, all_video_count=1)
     case _:
         pass

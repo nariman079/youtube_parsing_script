@@ -4,8 +4,9 @@
 import os
 import time
 import asyncio
-
 import pandas
+from pathlib import Path
+
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.options import Options
@@ -14,11 +15,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
-from services.youtube_services import YoutubeCsm
+from services.youtube.v1 import YoutubeCsm
 from base_dataclasses import YouTubeVideo
 from base_datas import BASE_CSV_LIST_PATH, BASE_TXT_LIST_PATH
 
+
 def create_video_obj(current_html_element: WebElement) -> YouTubeVideo:
+    """
+    Create video object with type YouTubeVideo 
+    """
     thumbnail = current_html_element.find_element(
         By.ID, 'thumbnail'
         ).find_element(
@@ -72,8 +77,6 @@ class YoutubeSelenium:
         """ Function for waiting download page """
         self.driver.implicitly_wait(time_to_wait=self.implicitly_wait_second)
 
-   
-
     def _scroll_down(self):
         """ Scroll down in html """
         for _ in range(100):
@@ -95,34 +98,37 @@ class YoutubeSelenium:
 
     async def _create_csv_file(self):
         """ Create csv file for urls """
-        mapping_data = [{'id':i.video_id, 'url':i.url } for i in self.videos]
-        data_frame = pandas.DataFrame(mapping_data)
         channel_name = await self.get_channel_name
-        file_name = channel_name + ".csv"
-
+        
         if not os.path.isdir(BASE_CSV_LIST_PATH):
             os.mkdir(BASE_CSV_LIST_PATH)
 
-        data_frame.to_csv(BASE_CSV_LIST_PATH + file_name)
+        file_name = f"{channel_name}.csv"
+        file_path: Path = Path(".", BASE_CSV_LIST_PATH, file_name)
+
+        mapping_data = [{'id':i.video_id, 'url':i.url } for i in self.videos]
+        data_frame = pandas.DataFrame(mapping_data)
+        data_frame.to_csv(file_path)
+
         self.csv_file_name = file_name
 
-        print(BASE_CSV_LIST_PATH + file_name + " ✅")
+        print(file_path ,  " ✅")
 
     async def _create_txt_file(self) -> None:
         """ Create txt file for urls """
         channel_name = await self.get_channel_name
-        file_name = channel_name + ".txt"
 
         if not os.path.isdir(BASE_TXT_LIST_PATH):
             os.mkdir(BASE_TXT_LIST_PATH)
 
-        with open(BASE_TXT_LIST_PATH + file_name, 'w+', encoding='utf-8') as file:
-            url_list = [video.url+"\n" for video in self.videos]
-            file.writelines(url_list)
+        file_name = f"{channel_name}.txt"
+        file_path = Path(BASE_TXT_LIST_PATH, file_name)
+        url_list = list(map(lambda video: video.url, self.videos))
+        file_path.write_text('\n'.join(url_list), encoding='utf-8')
 
-            self.txt_file_name = file_name
+        self.txt_file_name = file_name
 
-            print(BASE_TXT_LIST_PATH + file_name + " ✅")
+        print(file_path  ," ✅")
 
     async def exeute(self):
         """ Run methods"""
