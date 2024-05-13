@@ -12,7 +12,7 @@ from utils.pytube import YouTube
 from utils.pytube.exceptions import AgeRestrictedError, VideoUnavailable
 from services.selenium_services import YoutubeSelenium
 from services.youtube.v2 import is_exists_file, is_new_video
-from services.youtube.v1 import YoutubeCsm
+from services.youtube.v1 import YoutubeCsm, strip_video_title
 from base_datas import (BASE_DOWNLOAD_PATH, 
                         BASE_TXT_LIST_PATH,
                         BASE_URL_FILE)
@@ -32,14 +32,16 @@ def download_video_in_youtube(
         os.makedirs(full_path, exist_ok=True)
 
     try:
-        new_filename = f"[{datetime.now().strftime(r'%d-%m-%Y %H:%M')}][{youtube.title}].mp4"
+        new_filename = f"[{datetime.now().strftime(r'%d-%m-%Y %H-M')}][{youtube.title}].mp4"
         if is_exists_file(youtube.title, full_path):
             pass
         else:
             video_highest = youtube.streams.get_highest_resolution()
             if video := video_highest:
-                video.download(output_path=full_path, filename=new_filename)
-
+                video.download(
+                    output_path=full_path,
+                    filename=strip_video_title(new_filename)
+                    )
             print(f"✅ ({id_}/{all_video_count}) - {youtube.title} ")
     except AgeRestrictedError:
         print(f"🔞 ({id_}/{all_video_count}) - {youtube.title} ")

@@ -119,3 +119,9 @@ class YoutubeCsm:
             last_video = None
 
         return get_video_obj(last_video)
+    
+def strip_video_title(word: str) -> str:
+    """ Strip symbols """
+    for i in list('$#&|\\/*%<>'):
+        word = word.replace(i, '')
+    return word
