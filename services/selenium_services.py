@@ -79,10 +79,10 @@ class YoutubeSelenium:
 
     def _scroll_down(self):
         """ Scroll down in html """
-        for _ in range(100):
+        html = self.driver.find_element(By.TAG_NAME, "html")
+        print('Search all videos')
+        for _ in range(200):
             self.wait()
-            html = self.driver.find_element(By.TAG_NAME, "html")
-            print(f"Page down {_}")
             html.send_keys(Keys.END)
             self.wait()
 
@@ -140,7 +140,7 @@ class YoutubeSelenium:
 
         create_txt_file = asyncio.create_task(self._create_txt_file())
         create_exel_file = asyncio.create_task(self._create_csv_file())
-
+        print("Create txt and csv files")
         await create_txt_file
         await create_exel_file
         

@@ -11,9 +11,9 @@ from services.youtube.v2 import DownloadVideo
 while True:
     try:
         method = int(input('Actions:\n'
-                           '1. Automatic download\n' 
-                           '2. Upload using urls.txt\n' 
-                           '3. Get urls\n'
+                           '1. Track channel on new video\n' 
+                           '2. Download video using urls.txt or you file\n' 
+                           '3. Get all video urls from channel\n'
                            '4. Download video from url\nEnder download method (1,2,3 or 4):'))
         if method in [1,2,3,4, 5]:
             break
