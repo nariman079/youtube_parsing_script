@@ -113,7 +113,7 @@ class DownloadVideo:
         elif self.type == 1:
             self.filter_kwargs['resolution'] = '1080p' if self.video_quality == 1 else '720p'
             self.path = self.path / Path('videos')
-        print(self.filter_kwargs)
+
         if not os.path.isdir(self.path):
                 os.makedirs(self.path, exist_ok=True)
 
