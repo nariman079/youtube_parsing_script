@@ -7,7 +7,7 @@ import os
 
 from base_datas import base_json_file
 from utils.pytube.__main__ import YouTube
-
+from utils.pytube.exceptions import AgeRestrictedError, VideoUnavailable
 def is_exists_file(file_name: str, path: Path) -> bool:
     """
     If file is exists in path, then True 
@@ -121,9 +121,17 @@ class DownloadVideo:
         """
         download file
         """
-        print("Instalation file")
-        if video_for_download := self.video.streams.filter(**self.filter_kwargs).first():
-            video_for_download.download(output_path=self.path)
+        try:
+            print("Instalation file")
+            if video_for_download := self.video.streams.filter(**self.filter_kwargs).first():
+                video_for_download.download(output_path=self.path)
+                print(f"✅ -  {self.video.title} ")
+        except AgeRestrictedError:
+            print(f"🔞 - {self.video.title} ")
+        except FileNotFoundError:
+            print(f"❌ - {self.video.title} ")
+        except VideoUnavailable:
+            print(f"❌ - {self.video.title} ")
 
     def execute(self) -> None:
         """

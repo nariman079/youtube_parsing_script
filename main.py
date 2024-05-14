@@ -14,7 +14,10 @@ while True:
                            '1. Track channel on new video\n' 
                            '2. Download video using urls.txt or you file\n' 
                            '3. Get all video urls from channel\n'
-                           '4. Download video from url\nEnder download method (1,2,3 or 4):'))
+                           '4. Download video from url\n'
+                           '5. Download video or audio file form url\n'
+                           'Ender download method (1, 2, 3, 4 or 5 ): '))
+
         if method in [1,2,3,4, 5]:
             break
     except TypeError as errors:
