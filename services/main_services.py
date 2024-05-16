@@ -38,6 +38,7 @@ def download_video_in_youtube(
         else:
             video_highest = youtube.streams.get_highest_resolution()
             if video := video_highest:
+                print(f"Started video {youtube.title} install")
                 video.download(
                     output_path=full_path,
                     filename=strip_video_title(new_filename)
@@ -58,17 +59,21 @@ def install_video_form_file(
     """
     Installation video from urls.txt
     """
-    path = Path(BASE_TXT_LIST_PATH, ursl_txt_file)
-    with open(path, 'r', encoding='utf-8') as file:
-        all_urls: List[str] = file.readlines()
-        for i, url in enumerate(all_urls):
-            if len(url) > 10:
-                download_video_in_youtube(
-                    video_url=url, id_=i+1,
-                    all_video_count=len(all_urls),
-                    instalation_path=instalation_path
-                    )
+    try:
+        path = Path(BASE_TXT_LIST_PATH, ursl_txt_file)
 
+        with open(path, 'r', encoding='utf-8') as file:
+            all_urls: List[str] = file.readlines()
+            for i, url in enumerate(all_urls):
+                if len(url) > 10:
+                    
+                    download_video_in_youtube(
+                        video_url=url, id_=i+1,
+                        all_video_count=len(all_urls),
+                        instalation_path=instalation_path
+                        )
+    except FileNotFoundError:
+        print(f"File {ursl_txt_file} not found in urls/ directory")
 def check_channel_last_video(channel_url) -> None:
     """ Check youtube channel on new video"""
     i = 0

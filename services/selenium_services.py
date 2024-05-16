@@ -81,7 +81,7 @@ class YoutubeSelenium:
         """ Scroll down in html """
         html = self.driver.find_element(By.TAG_NAME, "html")
         print('Search all videos')
-        for _ in range(200):
+        for _ in range(250):
             self.wait()
             html.send_keys(Keys.END)
             self.wait()
