@@ -21,9 +21,12 @@ while True:
 
         if method in [1,2,3,4, 5]:
             break
-    except TypeError as errors:
-        print("Enter correnct value")
+    except TypeError:
+        print("\nEnter correnct value\n")
         continue
+    except ValueError:
+        print("\nEnter correnct value\n")
+
 
 match method:
     case 1:
