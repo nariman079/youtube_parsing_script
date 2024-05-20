@@ -9,11 +9,11 @@ from pathlib import Path
 
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver import FirefoxOptions, FirefoxService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
+
 
 from services.youtube.v1 import YoutubeCsm
 from base_dataclasses import YouTubeVideo
@@ -26,18 +26,18 @@ def create_video_obj(current_html_element: WebElement) -> YouTubeVideo:
     """
     thumbnail = current_html_element.find_element(
         By.ID, 'thumbnail'
-        ).find_element(
+    ).find_element(
         By.TAG_NAME, 'img'
-        ).get_attribute('src') or ""
+    ).get_attribute('src') or ""
     title = current_html_element.find_element(By.ID, 'video-title').text
     url = current_html_element.find_element(
         By.ID, 'thumbnail'
-        ).find_element(By.TAG_NAME, 'a').get_attribute('href') or ""
+    ).find_element(By.TAG_NAME, 'a').get_attribute('href') or ""
     length_text = current_html_element.find_element(
         By.ID, 'overlays'
-        ).find_element(
+    ).find_element(
         By.CLASS_NAME, 'badge-shape-wiz__text'
-        ).text
+    ).text
     video_id = url.split('v=')[1]
 
     return YouTubeVideo(
@@ -48,6 +48,7 @@ def create_video_obj(current_html_element: WebElement) -> YouTubeVideo:
         description="",
         length_text=length_text,
     )
+
 
 class YoutubeSelenium:
     """ Actions with Youtube and selenium """
@@ -64,11 +65,15 @@ class YoutubeSelenium:
         self.txt_file_name = None
         self.csv_file_name = None
         self.channel_name = "channel"
-        self.options = Options()
-        self.driver = webdriver.Chrome(
-            service=Service(ChromeDriverManager().install()),
-            options=self.options
-            )
+
+        self.options = FirefoxOptions()
+        self.options.add_argument("--headless")
+        self.driver = webdriver.Firefox(
+            service=FirefoxService(
+                executable_path=GeckoDriverManager().install()
+            ),
+            options=self.options,
+        )
         self.driver.get(self.channel_url)
         self.wait()
         time.sleep(self.wait_second)
@@ -99,20 +104,20 @@ class YoutubeSelenium:
     async def _create_csv_file(self):
         """ Create csv file for urls """
         channel_name = await self.get_channel_name
-        
+
         if not os.path.isdir(BASE_CSV_LIST_PATH):
             os.mkdir(BASE_CSV_LIST_PATH)
 
         file_name = f"{channel_name}.csv"
         file_path: Path = Path(".", BASE_CSV_LIST_PATH, file_name)
 
-        mapping_data = [{'id':i.video_id, 'url':i.url } for i in self.videos]
+        mapping_data = [{'id': i.video_id, 'url': i.url} for i in self.videos]
         data_frame = pandas.DataFrame(mapping_data)
         data_frame.to_csv(file_path)
 
         self.csv_file_name = file_name
 
-        print(file_path ,  " ✅")
+        print(file_path, " ✅")
 
     async def _create_txt_file(self) -> None:
         """ Create txt file for urls """
@@ -128,7 +133,7 @@ class YoutubeSelenium:
 
         self.txt_file_name = file_name
 
-        print(file_path  ," ✅")
+        print(file_path, " ✅")
 
     async def exeute(self):
         """ Run methods"""
@@ -143,4 +148,3 @@ class YoutubeSelenium:
         print("Create txt and csv files")
         await create_txt_file
         await create_exel_file
-        

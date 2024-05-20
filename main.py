@@ -37,20 +37,18 @@ match method:
         install_video_form_file(txt_file)
     case 3:
         channel_url = input('Enter channel url:') or 'https://www.youtube.com/@eminem/videos'
-        try:
-            while True:
-                install_immediately = int(input("Install immediately? (1. Yes or 0. No)\nEnter variant: "))
 
-                if install_immediately in [1,0]:
-                    get_video_url_from_channel(
-                        channel_url=channel_url,
-                        install_immediately=install_immediately
-                        )
-                    break
-                print('Enter correct value')
+        install_immediately = int(input("Install immediately? (1. Yes or 0. No)\nEnter variant: "))
 
-        except TypeError:
-            print("Enter correct value")
+        if install_immediately in [1,0]:
+            get_video_url_from_channel(
+                channel_url=channel_url,
+                install_immediately=install_immediately
+                )
+
+        print('Enter correct value')
+
+
 
     case 4:
         # ✅
